@@ -14,22 +14,22 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
-});
-
-const isInvalidDate = (date) => isNaN(date.getTime())
-// your first API endpoint... 
 app.get("/api/:date?", function (req, res) {
  
-  let date = new Date(req.params.date)
+  let date;
 
-  if (isInvalidDate(date)) {
-    date = new Date(parseInt(req.params.date))
-  }
+  if (!req.params.date) {
+    date = new Date();
+  } else {
+    date = new Date(req.params.date)
 
-  if (isInvalidDate(date)) {
-    return res.json({ error: "Invalid Date" });
+    if (isInvalidDate(date)) {
+      date = new Date(parseInt(req.params.date))
+    }
+
+    if (isInvalidDate(date)) {
+      return res.json({ error: "Invalid Date" });
+    }
   }
 
   res.json({ unix: date.getTime(), utc: date.toUTCString() });
